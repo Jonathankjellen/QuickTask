@@ -1,0 +1,41 @@
+﻿@page "/edit/{Id:int}"
+@inject QuickTask_Frontend.Services.TaskService TaskService
+@inject NavigationManager Navigation
+@using QuickTask_Frontend.models
+
+<h3>Edit Task</h3>
+
+@if (task is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="@task" OnValidSubmit="HandleUpdate">
+        <InputText @bind-Value="task.Title" class="form-control" />
+        <InputTextArea @bind-Value="task.Description" class="form-control" />
+        <InputDate @bind-Value="task.DueDate" class="form-control" />
+        <InputCheckbox @bind-Value="task.IsCompleted" /> Completed
+        <br />
+        <button type="submit" class="btn btn-primary">Update</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    TaskItem? task;
+
+    protected override async Task OnInitializedAsync()
+    {
+        task = await TaskService.GetTaskAsync(Id);
+    }
+
+    async Task HandleUpdate()
+    {
+        if (task is not null)
+        {
+            await TaskService.UpdateTaskAsync(Id, task);
+            Navigation.NavigateTo("/");
+        }
+    }
+}

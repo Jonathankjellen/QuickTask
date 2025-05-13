@@ -15,6 +15,18 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("TasksDb"));
 builder.Services.AddScoped<ITaskService, TaskService>();
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:5216") // Blazor frontend dev server
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 
 var app = builder.Build();
@@ -27,6 +39,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
+
 
 app.UseAuthorization();
 

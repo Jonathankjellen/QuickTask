@@ -1,0 +1,22 @@
+﻿@page "/create"
+@inject QuickTask_Frontend.Services.TaskService TaskService
+@inject NavigationManager Navigation
+
+<h3>Create Task</h3>
+
+<EditForm Model="@task" OnValidSubmit="HandleCreate">
+    <InputText @bind-Value="task.Title" class="form-control" placeholder="Title" />
+    <InputTextArea @bind-Value="task.Description" class="form-control" placeholder="Description" />
+    <InputDate @bind-Value="task.DueDate" class="form-control" />
+    <button type="submit" class="btn btn-success">Save</button>
+</EditForm>
+
+@code {
+    QuickTask_Frontend.models.TaskItem task = new() { DueDate = DateTime.Today };
+
+    async Task HandleCreate()
+    {
+        await TaskService.CreateTaskAsync(task);
+        Navigation.NavigateTo("/");
+    }
+}

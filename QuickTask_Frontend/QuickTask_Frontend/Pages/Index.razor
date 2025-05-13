@@ -1,0 +1,53 @@
+﻿@page "/"
+@inject QuickTask_Frontend.Services.TaskService TaskService
+@using QuickTask_Frontend.models
+
+<h3>Tasks</h3>
+
+@if (tasks is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Due</th>
+                <th>Completed</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in tasks)
+            {
+                <tr>
+                    <td>@task.Title</td>
+                    <td>@task.DueDate.ToShortDateString()</td>
+                    <td>@(task.IsCompleted ? "✔️" : "❌")</td>
+                    <td>
+                        <a href="/edit/@task.Id">Edit</a> |
+                        <button @onclick="() => Delete(task.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-primary" href="/create">New Task</a>
+}
+
+@code {
+    List<TaskItem>? tasks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tasks = await TaskService.GetTasksAsync();
+    }
+
+    async Task Delete(int id)
+    {
+        await TaskService.DeleteTaskAsync(id);
+        tasks = await TaskService.GetTasksAsync();
+    }
+}
